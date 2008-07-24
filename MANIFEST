@@ -1,3 +1,5 @@
+Changes
+hdr_check.h
 lib/Data/UUID/LibUUID.pm
 LibUUID.xs
 Makefile.PL
