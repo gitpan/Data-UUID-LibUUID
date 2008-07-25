@@ -6,15 +6,17 @@ use strict;
 
 use vars qw($VERSION @ISA);
 
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 use Sub::Exporter -setup => {
     exports => [qw(
         new_uuid_string new_uuid_binary
         
-        uuid_to_binary uuid_to_string
+        uuid_to_binary uuid_to_string uuid_to_hex uuid_to_base64
         
         uuid_eq uuid_compare
+
+        new_dce_uuid_string new_dce_uuid_binary
     )],
     groups => {
         default => [qw(new_uuid_string new_uuid_binary uuid_eq)],
@@ -31,6 +33,17 @@ eval {
     bootstrap Data::UUID::LibUUID $VERSION;
 };
 
+# convenient aliases
+*new_dce_uuid_bin = \&new_dce_uuid_binary;
+*new_uuid_bin = \&new_uuid_binary;
+*new_dce_uuid_str = \&new_dce_uuid_string;
+*new_uuid_str = \&new_uuid_string;
+
+sub uuid_to_base64 {
+    require MIME::Base64;
+    MIME::Base64::encode_base64(uuid_to_binary($_[0]), '');
+}
+
 __PACKAGE__
 
 __END__
@@ -43,7 +56,7 @@ Data::UUID::LibUUID - F<uuid.h> based UUID generation (versions 1, 2 and 4)
 
 =head1 SYNOPSIS
 
-	use Data::UUID::LibUUID;
+    use Data::UUID::LibUUID;
 
     my $uuid = new_uuid_string();
 
@@ -98,6 +111,27 @@ works like the C<cmp> builtin.
 
 Returns undef on non UUID arguments.
 
+=item new_dce_uuid_string
+
+=item new_dce_uuid_binary
+
+These two subroutines are a little hackish in that they take no arguments but
+also do not validate the arguments, so they can be abused as methods:
+
+    package MyFoo;
+
+    use Data::UUID::LibUUID (
+        new_dce_uuid_string => { -as "generate_uuid" },
+    );
+
+    sub yadda {
+        my $self = shift;
+        my $id = $self->generate_uuid;
+    }
+
+This allows the ID generation code to be subclassed, but still keeps the hassle
+down to a minimum. DCE is UUID version two specification.
+
 =back
 
 =head1 TODO
@@ -126,8 +160,8 @@ Yuval Kogman E<lt>nothingmuch@woobling.orgE<gt>
 
 =head1 COPYRIGHT
 
-	Copyright (c) 2008 Yuval Kogman. All rights reserved
-	This program is free software; you can redistribute
-	it and/or modify it under the same terms as Perl itself.
+    Copyright (c) 2008 Yuval Kogman. All rights reserved
+    This program is free software; you can redistribute
+    it and/or modify it under the same terms as Perl itself.
 
 =cut

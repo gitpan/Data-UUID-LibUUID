@@ -1,12 +1,14 @@
 --- #YAML:1.0
 name:                Data-UUID-LibUUID
-version:             0.02
+version:             0.03
 abstract:            ~
 license:             ~
 author:              ~
 generated_by:        ExtUtils::MakeMaker version 6.44
 distribution_type:   module
 requires:     
+    asa:                           0
+    MIME::Base64:                  0
     Sub::Exporter:                 0
     Test::More:                    0
     Test::use::ok:                 0

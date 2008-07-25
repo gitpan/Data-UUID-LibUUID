@@ -2,7 +2,7 @@
 
 use strict;
 
-use Test::More 'no_plan';
+use Test::More tests => 46;
 
 use ok 'Data::UUID::LibUUID' => ":all";
 
@@ -55,7 +55,7 @@ is( uuid_compare(uuid_to_string($bin), $bin), 0, "compare string and binary" );
 my $obj = StringObj->new($str);
 ok( ref $obj, "object" );
 
-is( "$str", $str, "stringifies" );
+is( "$obj", $str, "stringifies" );
 
 ok( uuid_eq($str, $obj), "uuid_eq on stringifying object" );
 
@@ -69,3 +69,35 @@ is( uuid_to_binary(*STDOUT), undef, "to_binary(*STDOUT)" );
 is( uuid_to_binary(sub { }), undef, "to_binary(sub { })" );
 is( uuid_to_binary(42), undef, "to_binary(IV)" );
 
+is( length(new_dce_uuid_string()), 36, 'new_dce_uuid_string ignores its args' );
+is( length(new_dce_uuid_string( bless({}, "Foo"), "foo" )), 36, 'new_dce_uuid_string ignores its args' );
+
+{
+    ( my $hex = uuid_to_string($bin) ) =~ s/-//g;
+    is( uc $hex, uc unpack("H*", $bin), "hex" );
+    is( uc $hex, uc uuid_to_hex($bin), "uuid_to_hex" );
+    isnt( uc $hex, uc uuid_to_string($bin), "hex != str");
+    is( join("-", unpack("A8 A4 A4 A4 A*", uc $hex) ), uc uuid_to_string($bin), "reformat" );
+    is( uuid_to_string($hex), uuid_to_string($bin), "uuid_to_string(hex)" );
+}
+
+{
+    use MIME::Base64;
+
+    my $base64 = MIME::Base64::encode_base64($bin);
+
+    ok( uuid_eq($base64, $bin), "base64 eq bin");
+
+    is( uuid_to_string($base64), uuid_to_string($bin), "uuid_to_string(base64)" );
+    is( uuid_to_binary($base64), $bin, "uuid_to_binary(base64)");
+
+    $base64 =~ s/\s*//g;
+
+    is( uuid_to_base64($bin), $base64, "uuid_to_base64");
+
+    ok( uuid_eq($base64, $bin), "base64 eq bin");
+
+    is( uuid_to_string($base64), uuid_to_string($bin), "uuid_to_string(base64)" );
+    is( uuid_to_binary($base64), $bin, "uuid_to_binary(base64)");
+
+}
