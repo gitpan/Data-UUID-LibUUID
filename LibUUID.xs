@@ -2,6 +2,8 @@
 #include "perl.h"
 #include "XSUB.h"
 
+#define NEED_load_module
+#define NEED_vload_module
 #define NEED_sv_2pv_flags
 #include "ppport.h"
 
@@ -120,7 +122,7 @@ STATIC IV sv_to_uuid (SV *sv, uuid_t uuid) {
                 call_pv("MIME::Base64::decode_base64", G_SCALAR);
 
                 SPAGAIN;
-                pv = POPpx;
+                pv = SvPV_nolen(TOPs);
 
                 /* fall through */
             case sizeof(uuid_t):
