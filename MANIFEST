@@ -9,5 +9,6 @@ MANIFEST.SKIP
 ppport.h
 t/basic.t
 t/compat.t
+t/fork.t
 META.yml                                 Module meta-data (added by MakeMaker)
 SIGNATURE                                Public-key signature (added by MakeMaker)
