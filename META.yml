@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Data-UUID-LibUUID
-version:            0.05_04
+version:            0.05
 abstract:           ~
 author:  []
 license:            unknown
